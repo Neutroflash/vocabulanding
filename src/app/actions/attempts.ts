@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { attempts } from "@/db/schema";
 import { roundSizeFor, scoreRound } from "@/lib/choice";
 import { getCurrentUser } from "@/lib/dal";
+import { scoreHangman, wordCountFor } from "@/lib/hangman";
 import { pairCountFor, scoreMemory, type Turn } from "@/lib/memory";
 
 export type SaveResult = { ok: true; score: number } | { ok: false; error: string };
@@ -118,4 +119,57 @@ export async function saveMemoryAttempt(input: MemoryInput): Promise<SaveResult>
   revalidatePath("/learn");
   revalidatePath("/teacher");
   return { ok: true, score: game.score };
+}
+
+type HangmanInput = {
+  moduleId: string;
+  /** Vocabulary indexes of the words in this round, in order. */
+  words: number[];
+  /** Letters guessed for each word, in order. */
+  guesses: string[][];
+  durationSec: number;
+};
+
+/** Saves a finished Hangman round. The score is recomputed here by replaying the guesses. */
+export async function saveHangmanAttempt(input: HangmanInput): Promise<SaveResult> {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "student") return EXPIRED;
+
+  const learningModule = typeof input?.moduleId === "string" ? getModule(input.moduleId) : undefined;
+  if (!learningModule || !Array.isArray(input.words) || !Array.isArray(input.guesses)) return INVALID;
+
+  const wordCount = wordCountFor(learningModule.vocab.length);
+  const validWords =
+    input.words.length === wordCount &&
+    new Set(input.words).size === wordCount &&
+    input.words.every((i) => Number.isInteger(i) && i >= 0 && i < learningModule.vocab.length);
+  if (!validWords) return INVALID;
+
+  const validGuesses =
+    input.guesses.length > 0 &&
+    input.guesses.length <= wordCount &&
+    input.guesses.every((g) => Array.isArray(g) && g.length <= 26 && g.every((l) => typeof l === "string"));
+  if (!validGuesses) return INVALID;
+
+  const round = scoreHangman(
+    input.words.map((i) => learningModule.vocab[i].word),
+    input.guesses,
+  );
+  if (!round || !round.finished) return INVALID;
+
+  await db.insert(attempts).values({
+    userId: user.id,
+    moduleId: learningModule.id,
+    game: "hangman",
+    score: round.score,
+    correct: round.solved,
+    total: wordCount,
+    maxStreak: round.maxStreak,
+    heartsLeft: Math.max(round.heartsLeft, 0),
+    durationSec: cleanDuration(input.durationSec),
+  });
+
+  revalidatePath("/learn");
+  revalidatePath("/teacher");
+  return { ok: true, score: round.score };
 }

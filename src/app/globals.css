@@ -318,3 +318,46 @@ body {
     transition: none;
   }
 }
+
+/* Letter key of the Hangman keyboard. */
+.key {
+  display: grid;
+  place-items: center;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--color-line);
+  border-bottom-width: 4px;
+  background: var(--color-surface);
+  font-size: 1.125rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 80ms ease,
+    border-bottom-width 80ms ease;
+}
+.key:not(:disabled):active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+.key:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 2px;
+}
+.key:disabled {
+  cursor: default;
+  color: var(--color-muted);
+  opacity: 0.55;
+}
+.key-hit:disabled {
+  border-color: var(--color-ok);
+  background: #dcf7e8;
+  color: var(--color-ok-dark);
+  opacity: 1;
+}
+.key-miss:disabled {
+  border-color: var(--color-bad);
+  background: #ffe3e4;
+  color: var(--color-bad-dark);
+  opacity: 0.8;
+}
