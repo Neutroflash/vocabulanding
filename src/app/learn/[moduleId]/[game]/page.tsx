@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
+import { ChoiceGame } from "@/components/choice-game";
 import { getGame, getModule } from "@/content";
+import { buildRound } from "@/lib/choice";
 import { requireStudent } from "@/lib/dal";
 
 type Props = { params: Promise<{ moduleId: string; game: string }> };
@@ -22,8 +24,18 @@ export default async function GamePage({ params }: Props) {
   const game = getGame(gameId);
   if (!learningModule || !game) notFound();
 
-  const items = game.id === "choice" ? learningModule.questions.length : learningModule.vocab.length;
-  const unit = game.id === "choice" ? "questions" : "words";
+  if (game.id === "choice") {
+    return (
+      <ChoiceGame
+        moduleId={learningModule.id}
+        moduleTitle={learningModule.title}
+        questions={learningModule.questions}
+        initialRound={buildRound(learningModule.questions)}
+      />
+    );
+  }
+
+  const items = learningModule.vocab.length;
 
   return (
     <main
@@ -39,7 +51,7 @@ export default async function GamePage({ params }: Props) {
         <p className="mt-2 text-muted">{game.description}</p>
       </div>
       <p className="card px-5 py-4 font-bold">
-        {items} {unit} ready. This game is coming soon.
+        {items} words ready. This game is coming soon.
       </p>
       <Link href="/learn" className="btn btn-ghost">
         Back to my path
