@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
+import { isMuted, setMuted, subscribeMuted } from "@/lib/sound";
 
 export type SaveState = "idle" | "saving" | "saved" | "error";
 
@@ -15,6 +19,8 @@ export function GameTopBar({
   maxHearts: number;
 }) {
   const left = Math.max(hearts, 0);
+  // The server always renders "sound on"; the saved choice applies once the page is in the browser.
+  const muted = useSyncExternalStore(subscribeMuted, isMuted, () => false);
   return (
     <header className="flex items-center gap-3 px-4 pt-5">
       <Link
@@ -37,6 +43,16 @@ export function GameTopBar({
           style={{ width: `${(progress / max) * 100}%` }}
         />
       </div>
+      <button
+        type="button"
+        onClick={() => setMuted(!muted)}
+        aria-pressed={muted}
+        aria-label={muted ? "Turn sound on" : "Turn sound off"}
+        title={muted ? "Turn sound on" : "Turn sound off"}
+        className="grid size-10 shrink-0 place-items-center rounded-full text-xl hover:bg-line"
+      >
+        <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span>
+      </button>
       <p className="shrink-0 text-lg font-black" aria-label={`${left} hearts left`}>
         <span aria-hidden="true">
           {"❤️".repeat(left)}

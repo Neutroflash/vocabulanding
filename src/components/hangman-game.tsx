@@ -173,7 +173,7 @@ function Round({
             <span className="text-6xl" role="img" aria-label="Picture clue">
               {item.emoji}
             </span>
-            <button type="button" onClick={() => speak(item.word)} className="btn btn-ghost btn-sm">
+            <button type="button" onClick={() => speak(item.word, { force: true })} className="btn btn-ghost btn-sm">
               <span aria-hidden="true">🔊</span> Listen
             </button>
             <p className="text-sm font-extrabold text-muted">
@@ -183,32 +183,32 @@ function Round({
         </div>
 
         <p
-          className="flex flex-wrap justify-center gap-x-1.5 gap-y-2 py-1"
+          className="flex flex-wrap justify-center gap-x-5 gap-y-2 py-1"
           aria-label={
             word.finished
               ? `The word is ${item.word}`
               : `Word with ${item.word.replace(/ /g, "").length} letters`
           }
         >
-          {item.word.split("").map((char, i) =>
-            char === " " ? (
-              <span key={i} className="w-4" aria-hidden="true" />
-            ) : (
-              <span
-                key={i}
-                aria-hidden="true"
-                className={`grid h-11 w-7 place-items-center border-b-4 text-2xl font-black uppercase ${
-                  letters.includes(char)
-                    ? "border-ink"
-                    : word.failed
-                      ? "border-bad text-bad-dark"
-                      : "border-muted/60"
-                }`}
-              >
-                {letters.includes(char) || word.failed ? char : ""}
-              </span>
-            ),
-          )}
+          {/* Each word stays on one line; its letter slots shrink on narrow screens. */}
+          {item.word.split(" ").map((part, w) => (
+            <span key={w} className="flex max-w-full gap-1.5" aria-hidden="true">
+              {part.split("").map((char, i) => (
+                <span
+                  key={i}
+                  className={`grid h-11 w-7 min-w-0 shrink place-items-center border-b-4 text-2xl font-black uppercase ${
+                    letters.includes(char)
+                      ? "border-ink"
+                      : word.failed
+                        ? "border-bad text-bad-dark"
+                        : "border-muted/60"
+                  }`}
+                >
+                  {letters.includes(char) || word.failed ? char : ""}
+                </span>
+              ))}
+            </span>
+          ))}
         </p>
 
         <div className="grid grid-cols-7 gap-1.5" role="group" aria-label="Letters">

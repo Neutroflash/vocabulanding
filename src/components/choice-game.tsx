@@ -219,7 +219,7 @@ function Round({
             </div>
             <button
               type="button"
-              onClick={() => speak(completeSentence(question.prompt, correctOption.text))}
+              onClick={() => speak(completeSentence(question.prompt, correctOption.text), { force: true })}
               className="btn btn-ghost btn-sm shrink-0"
             >
               <span aria-hidden="true">🔊</span> Listen
