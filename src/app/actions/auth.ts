@@ -26,16 +26,16 @@ export async function signup(_prev: AuthState, formData: FormData): Promise<Auth
   const echo = { username, displayName };
 
   if (displayName.length < 2 || displayName.length > 40) {
-    return { ...echo, error: "Escribe tu nombre (entre 2 y 40 caracteres)." };
+    return { ...echo, error: "Enter your name (2 to 40 characters)." };
   }
   if (!USERNAME_RE.test(username)) {
     return {
       ...echo,
-      error: "El usuario debe tener de 3 a 20 caracteres: letras, números, punto o guion.",
+      error: "Username must be 3 to 20 characters: letters, numbers, dots or hyphens.",
     };
   }
   if (password.length < 6 || password.length > 72) {
-    return { ...echo, error: "La contraseña debe tener al menos 6 caracteres." };
+    return { ...echo, error: "Password must be at least 6 characters." };
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
@@ -46,7 +46,7 @@ export async function signup(_prev: AuthState, formData: FormData): Promise<Auth
     .returning({ id: users.id });
 
   if (!created) {
-    return { ...echo, error: "Ese usuario ya existe. Prueba con otro." };
+    return { ...echo, error: "That username is already taken. Try another one." };
   }
 
   await createSession({ userId: created.id, role: "student" });
@@ -65,7 +65,7 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
 
   const ok = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
   if (!user || !ok) {
-    return { username, error: "Usuario o contraseña incorrectos." };
+    return { username, error: "Incorrect username or password." };
   }
 
   await createSession({ userId: user.id, role: user.role });

@@ -9,7 +9,7 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: "Vocabulanding",
-  description: "Aprende vocabulario y gramática del inglés jugando.",
+  description: "Learn English vocabulary and grammar by playing.",
 };
 
 export const viewport: Viewport = {
@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${nunito.variable} h-full antialiased`}>
+    <html lang="en" className={`${nunito.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

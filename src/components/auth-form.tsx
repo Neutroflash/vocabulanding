@@ -6,21 +6,21 @@ import { login, signup } from "@/app/actions/auth";
 
 const COPY = {
   login: {
-    title: "¡Hola de nuevo!",
-    subtitle: "Ingresa para seguir tu ruta.",
-    submit: "Ingresar",
-    pending: "Ingresando…",
-    switchText: "¿Aún no tienes cuenta?",
-    switchLink: "Regístrate",
+    title: "Welcome back!",
+    subtitle: "Log in to continue your path.",
+    submit: "Log in",
+    pending: "Logging in…",
+    switchText: "Don't have an account yet?",
+    switchLink: "Sign up",
     switchHref: "/signup",
   },
   signup: {
-    title: "Crea tu cuenta",
-    subtitle: "Solo necesitas un usuario y una contraseña.",
-    submit: "Crear cuenta",
-    pending: "Creando…",
-    switchText: "¿Ya tienes cuenta?",
-    switchLink: "Ingresa",
+    title: "Create your account",
+    subtitle: "All you need is a username and a password.",
+    submit: "Create account",
+    pending: "Creating…",
+    switchText: "Already have an account?",
+    switchLink: "Log in",
     switchHref: "/login",
   },
 } as const;
@@ -37,11 +37,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       <form action={action} className="mt-6 flex flex-col gap-4">
         {mode === "signup" && (
           <label className="flex flex-col gap-1.5 text-sm font-bold">
-            Tu nombre
+            Your name
             <input
               className="input"
               name="displayName"
-              placeholder="Ej. Camila R."
+              placeholder="e.g. Camila R."
               autoComplete="name"
               defaultValue={state?.displayName}
               maxLength={40}
@@ -51,11 +51,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         )}
 
         <label className="flex flex-col gap-1.5 text-sm font-bold">
-          Usuario
+          Username
           <input
             className="input"
             name="username"
-            placeholder="Ej. camila5b"
+            placeholder="e.g. camila5b"
             autoComplete="username"
             autoCapitalize="none"
             autoCorrect="off"
@@ -67,12 +67,12 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </label>
 
         <label className="flex flex-col gap-1.5 text-sm font-bold">
-          Contraseña
+          Password
           <input
             className="input"
             name="password"
             type="password"
-            placeholder={mode === "signup" ? "Mínimo 6 caracteres" : "Tu contraseña"}
+            placeholder={mode === "signup" ? "At least 6 characters" : "Your password"}
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
             maxLength={72}
             required

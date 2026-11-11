@@ -4,9 +4,9 @@ import { Logo } from "@/components/logo";
 import { getCurrentUser, homeFor } from "@/lib/dal";
 
 const GAMES = [
-  { emoji: "🃏", name: "Memory Game", text: "Empareja palabras con imágenes." },
-  { emoji: "🔤", name: "Ahorcado", text: "Adivina la palabra letra por letra." },
-  { emoji: "✅", name: "Completar oraciones", text: "Elige la opción correcta." },
+  { emoji: "🃏", name: "Memory Game", text: "Match words with pictures." },
+  { emoji: "🔤", name: "Hangman", text: "Guess the word letter by letter." },
+  { emoji: "✅", name: "Fill in the blank", text: "Choose the correct option." },
 ];
 
 export default async function Home() {
@@ -18,16 +18,16 @@ export default async function Home() {
       <div className="flex flex-col items-center gap-4">
         <Logo size="lg" />
         <p className="max-w-md text-lg font-semibold text-muted">
-          Aprende vocabulario y gramática del inglés jugando, a tu propio ritmo.
+          Learn English vocabulary and grammar by playing, at your own pace.
         </p>
       </div>
 
       <div className="flex w-full max-w-sm flex-col gap-3">
         <Link href="/signup" className="btn btn-primary">
-          Empezar ahora
+          Get started
         </Link>
         <Link href="/login" className="btn btn-ghost">
-          Ya tengo una cuenta
+          I already have an account
         </Link>
       </div>
 

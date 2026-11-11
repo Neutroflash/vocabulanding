@@ -15,7 +15,7 @@ export function AppHeader({ name, badge }: { name: string; badge?: string }) {
           </span>
           <form action={logout}>
             <button type="submit" className="btn btn-ghost btn-sm">
-              Salir
+              Log out
             </button>
           </form>
         </div>

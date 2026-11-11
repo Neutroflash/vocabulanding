@@ -5,9 +5,9 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { requireTeacher } from "@/lib/dal";
 
-export const metadata: Metadata = { title: "Panel docente · Vocabulanding" };
+export const metadata: Metadata = { title: "Teacher dashboard · Vocabulanding" };
 
-const dateFormat = new Intl.DateTimeFormat("es-PE", {
+const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "medium",
   timeZone: "America/Lima",
 });
@@ -28,27 +28,27 @@ export default async function TeacherPage() {
 
   return (
     <>
-      <AppHeader name={teacher.displayName} badge="Docente" />
+      <AppHeader name={teacher.displayName} badge="Teacher" />
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
         <div>
-          <h1 className="text-3xl font-black">Panel docente</h1>
+          <h1 className="text-3xl font-black">Teacher dashboard</h1>
           <p className="mt-1 text-muted">
-            {students.length === 1 ? "1 alumno registrado" : `${students.length} alumnos registrados`}
+            {students.length === 1 ? "1 student registered" : `${students.length} students registered`}
           </p>
         </div>
 
         {students.length === 0 ? (
           <div className="card p-6 text-muted">
-            Aún no hay alumnos. Cuando se registren, aparecerán aquí.
+            No students yet. They will show up here once they sign up.
           </div>
         ) : (
           <div className="card overflow-x-auto">
             <table className="w-full text-left">
               <thead className="border-b-2 border-line text-xs uppercase tracking-wide text-muted">
                 <tr>
-                  <th className="px-4 py-3">Alumno</th>
-                  <th className="px-4 py-3">Usuario</th>
-                  <th className="px-4 py-3">Registro</th>
+                  <th className="px-4 py-3">Student</th>
+                  <th className="px-4 py-3">Username</th>
+                  <th className="px-4 py-3">Joined</th>
                 </tr>
               </thead>
               <tbody>
