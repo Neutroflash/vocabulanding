@@ -6,7 +6,7 @@ import { getCurrentUser, homeFor } from "@/lib/dal";
 const GAMES = [
   { emoji: "🃏", name: "Memory Game", text: "Match words with pictures." },
   { emoji: "🔤", name: "Hangman", text: "Guess the word letter by letter." },
-  { emoji: "✅", name: "Fill in the blank", text: "Choose the correct option." },
+  { emoji: "✏️", name: "Fill in the blank", text: "Choose the correct option." },
 ];
 
 export default async function Home() {

@@ -106,3 +106,36 @@ body {
   color: var(--color-muted);
   font-weight: 500;
 }
+
+/* Round node on the learning path. Uses the module colors --m and --m-dark. */
+.node {
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+  font-size: 2rem;
+  line-height: 1;
+  background: var(--m);
+  border-bottom: 7px solid var(--m-dark);
+  transition:
+    transform 80ms ease,
+    border-bottom-width 80ms ease,
+    filter 120ms ease;
+}
+.node-link:hover .node {
+  filter: brightness(1.07);
+}
+.node-link:active .node {
+  transform: translateY(4px);
+  border-bottom-width: 3px;
+}
+.node-link:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 6px;
+  border-radius: 1rem;
+}
+.node-done {
+  background: var(--color-sun);
+  border-bottom-color: var(--color-sun-dark);
+}
