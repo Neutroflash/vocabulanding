@@ -1,10 +1,12 @@
 import { logout } from "@/app/actions/auth";
 import { Logo } from "./logo";
 
-export function AppHeader({ name, badge }: { name: string; badge?: string }) {
+export function AppHeader({ name, badge, wide }: { name: string; badge?: string; wide?: boolean }) {
   return (
     <header className="sticky top-0 z-10 border-b-2 border-line bg-surface">
-      <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-3">
+      <div
+        className={`mx-auto flex w-full items-center justify-between gap-3 px-4 py-3 ${wide ? "max-w-5xl" : "max-w-3xl"}`}
+      >
         <Logo />
         <div className="flex items-center gap-3">
           <span className="hidden text-sm font-bold text-muted sm:inline">
