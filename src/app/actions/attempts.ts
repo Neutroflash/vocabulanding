@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { attempts } from "@/db/schema";
 import { roundSizeFor, scoreRound } from "@/lib/choice";
 import { getCurrentUser } from "@/lib/dal";
+import { pairCountFor, scoreMemory, type Turn } from "@/lib/memory";
 
 export type SaveResult = { ok: true; score: number } | { ok: false; error: string };
 
@@ -17,12 +18,18 @@ type ChoiceInput = {
 };
 
 const INVALID: SaveResult = { ok: false, error: "This round could not be saved." };
+const EXPIRED: SaveResult = { ok: false, error: "Your session expired. Log in again." };
+
+function cleanDuration(value: unknown) {
+  const seconds = typeof value === "number" && Number.isFinite(value) ? Math.round(value) : 0;
+  return Math.min(Math.max(seconds, 0), 3600);
+}
 
 /** Saves a finished "Fill in the blank" round. The score is recomputed here from the answers. */
 export async function saveChoiceAttempt(input: ChoiceInput): Promise<SaveResult> {
   const user = await getCurrentUser();
   if (!user || user.role !== "student") {
-    return { ok: false, error: "Your session expired. Log in again." };
+    return EXPIRED;
   }
 
   const learningModule = typeof input?.moduleId === "string" ? getModule(input.moduleId) : undefined;
@@ -46,8 +53,6 @@ export async function saveChoiceAttempt(input: ChoiceInput): Promise<SaveResult>
   const round = scoreRound(results, roundSize);
   if (!round.finished) return INVALID;
 
-  const duration = Number.isFinite(input.durationSec) ? Math.round(input.durationSec) : 0;
-
   await db.insert(attempts).values({
     userId: user.id,
     moduleId: learningModule.id,
@@ -57,10 +62,60 @@ export async function saveChoiceAttempt(input: ChoiceInput): Promise<SaveResult>
     total: roundSize,
     maxStreak: round.maxStreak,
     heartsLeft: Math.max(round.heartsLeft, 0),
-    durationSec: Math.min(Math.max(duration, 0), 3600),
+    durationSec: cleanDuration(input.durationSec),
   });
 
   revalidatePath("/learn");
   revalidatePath("/teacher");
   return { ok: true, score: round.score };
+}
+
+type MemoryInput = {
+  moduleId: string;
+  /** Vocabulary indexes of the words dealt in this game. */
+  pairs: number[];
+  /** Every pair of cards flipped, in order. */
+  turns: Turn[];
+  durationSec: number;
+};
+
+/** Saves a finished Memory Game. The score is recomputed here by replaying the turns. */
+export async function saveMemoryAttempt(input: MemoryInput): Promise<SaveResult> {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "student") return EXPIRED;
+
+  const learningModule = typeof input?.moduleId === "string" ? getModule(input.moduleId) : undefined;
+  if (!learningModule || !Array.isArray(input.pairs) || !Array.isArray(input.turns)) return INVALID;
+
+  const pairCount = pairCountFor(learningModule.vocab.length);
+  const validPairs =
+    input.pairs.length === pairCount &&
+    new Set(input.pairs).size === pairCount &&
+    input.pairs.every((i) => Number.isInteger(i) && i >= 0 && i < learningModule.vocab.length);
+  if (!validPairs) return INVALID;
+
+  const validTurns =
+    input.turns.length > 0 &&
+    input.turns.length <= 500 &&
+    input.turns.every((t) => Array.isArray(t) && t.length === 2 && t.every((id) => typeof id === "string"));
+  if (!validTurns) return INVALID;
+
+  const game = scoreMemory(input.turns, input.pairs);
+  if (!game || !game.finished) return INVALID;
+
+  await db.insert(attempts).values({
+    userId: user.id,
+    moduleId: learningModule.id,
+    game: "memory",
+    score: game.score,
+    correct: game.matches,
+    total: pairCount,
+    maxStreak: game.maxStreak,
+    heartsLeft: Math.max(game.heartsLeft, 0),
+    durationSec: cleanDuration(input.durationSec),
+  });
+
+  revalidatePath("/learn");
+  revalidatePath("/teacher");
+  return { ok: true, score: game.score };
 }

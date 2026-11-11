@@ -3,9 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { ChoiceGame } from "@/components/choice-game";
+import { MemoryGame } from "@/components/memory-game";
 import { getGame, getModule } from "@/content";
 import { buildRound } from "@/lib/choice";
 import { requireStudent } from "@/lib/dal";
+import { buildDeck } from "@/lib/memory";
 
 type Props = { params: Promise<{ moduleId: string; game: string }> };
 
@@ -35,12 +37,27 @@ export default async function GamePage({ params }: Props) {
     );
   }
 
+  const moduleColors = { "--m": learningModule.color, "--m-dark": learningModule.colorDark } as CSSProperties;
+
+  if (game.id === "memory") {
+    return (
+      <div className="contents" style={moduleColors}>
+        <MemoryGame
+          moduleId={learningModule.id}
+          moduleTitle={learningModule.title}
+          vocab={learningModule.vocab}
+          initialDeck={buildDeck(learningModule.vocab)}
+        />
+      </div>
+    );
+  }
+
   const items = learningModule.vocab.length;
 
   return (
     <main
       className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-6 px-4 py-10 text-center"
-      style={{ "--m": learningModule.color, "--m-dark": learningModule.colorDark } as CSSProperties}
+      style={moduleColors}
     >
       <span className="node" aria-hidden="true">
         {game.emoji}

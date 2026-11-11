@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { saveChoiceAttempt } from "@/app/actions/attempts";
 import type { ChoiceQuestion } from "@/content/types";
+import { GameResults, GameStatus, GameTopBar, type SaveState } from "./game-ui";
 import {
   MAX_HEARTS,
   blankFills,
@@ -24,7 +24,6 @@ type Props = {
 };
 
 type Answer = { q: number; o: number };
-type SaveState = "idle" | "saving" | "saved" | "error";
 
 export function ChoiceGame({ moduleId, moduleTitle, questions, initialRound }: Props) {
   // The first round comes from the server; later rounds are built here on "Play again".
@@ -136,14 +135,18 @@ function Round({
   }, [done, checked, check, next, question]);
 
   if (done) {
+    const outOfHearts = score.heartsLeft <= 0;
+    const perfect = !outOfHearts && score.correct === size;
     return (
-      <Results
-        moduleTitle={moduleTitle}
-        score={score.score}
-        correct={score.correct}
-        total={size}
-        maxStreak={score.maxStreak}
-        outOfHearts={score.heartsLeft <= 0}
+      <GameResults
+        emoji={outOfHearts ? "💔" : perfect ? "🏆" : "🎉"}
+        title={outOfHearts ? "Out of hearts!" : perfect ? "Perfect round!" : "Round complete!"}
+        subtitle={`${outOfHearts ? "Keep practicing, you will get it." : "Great work."} · ${moduleTitle}`}
+        stats={[
+          { label: "Points", value: score.score, emoji: "⭐" },
+          { label: "Correct", value: `${score.correct} / ${size}`, emoji: "🎯" },
+          { label: "Best streak", value: score.maxStreak, emoji: "🔥" },
+        ]}
         saveState={saveState}
         saveError={saveError}
         onRetrySave={() => void save(answers)}
@@ -154,47 +157,10 @@ function Round({
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-1 flex-col">
-      <header className="flex items-center gap-3 px-4 pt-5">
-        <Link
-          href="/learn"
-          aria-label="Quit and go back to my path"
-          className="grid size-10 shrink-0 place-items-center rounded-full text-2xl font-black text-muted hover:bg-line"
-        >
-          ✕
-        </Link>
-        <div
-          className="h-4 flex-1 overflow-hidden rounded-full bg-line"
-          role="progressbar"
-          aria-label="Round progress"
-          aria-valuemin={0}
-          aria-valuemax={size}
-          aria-valuenow={results.length}
-        >
-          <div
-            className="h-full rounded-full bg-ok transition-[width] duration-300"
-            style={{ width: `${(results.length / size) * 100}%` }}
-          />
-        </div>
-        <p className="shrink-0 text-lg font-black text-bad" aria-label={`${score.heartsLeft} hearts left`}>
-          <span aria-hidden="true">
-            {"❤️".repeat(Math.max(score.heartsLeft, 0))}
-            <span className="opacity-25 grayscale">{"❤️".repeat(MAX_HEARTS - Math.max(score.heartsLeft, 0))}</span>
-          </span>
-        </p>
-      </header>
+      <GameTopBar progress={results.length} max={size} hearts={score.heartsLeft} maxHearts={MAX_HEARTS} />
 
       <main className="flex flex-1 flex-col gap-6 px-4 py-6">
-        <div className="flex items-center justify-between gap-3 text-sm font-extrabold">
-          <p className="text-muted">
-            Question {index + 1} of {size}
-          </p>
-          <p className="flex items-center gap-2">
-            {score.streak >= 2 && (
-              <span className="pop rounded-full bg-sun/30 px-3 py-1 text-sun-dark">🔥 {score.streak} in a row</span>
-            )}
-            <span className="rounded-full bg-brand-soft px-3 py-1 text-brand">⭐ {score.score}</span>
-          </p>
-        </div>
+        <GameStatus label={`Question ${index + 1} of ${size}`} streak={score.streak} points={score.score} />
 
         <div>
           <h1 className="text-lg font-black text-muted">Complete the sentence</h1>
@@ -298,86 +264,5 @@ function Prompt({ question, revealed, fills }: { question: RoundQuestion; reveal
         </span>
       ))}
     </p>
-  );
-}
-
-function Results({
-  moduleTitle,
-  score,
-  correct,
-  total,
-  maxStreak,
-  outOfHearts,
-  saveState,
-  saveError,
-  onRetrySave,
-  onPlayAgain,
-}: {
-  moduleTitle: string;
-  score: number;
-  correct: number;
-  total: number;
-  maxStreak: number;
-  outOfHearts: boolean;
-  saveState: SaveState;
-  saveError: string;
-  onRetrySave: () => void;
-  onPlayAgain: () => void;
-}) {
-  const perfect = !outOfHearts && correct === total;
-  const title = outOfHearts ? "Out of hearts!" : perfect ? "Perfect round!" : "Round complete!";
-  const emoji = outOfHearts ? "💔" : perfect ? "🏆" : "🎉";
-  const stats = [
-    { label: "Points", value: score, emoji: "⭐" },
-    { label: "Correct", value: `${correct} / ${total}`, emoji: "🎯" },
-    { label: "Best streak", value: maxStreak, emoji: "🔥" },
-  ];
-
-  return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-6 px-4 py-10 text-center">
-      <span className="pop text-7xl" aria-hidden="true">
-        {emoji}
-      </span>
-      <div>
-        <h1 className="text-3xl font-black">{title}</h1>
-        <p className="mt-1 text-muted">
-          {outOfHearts ? "Keep practicing, you will get it." : "Great work."} · {moduleTitle}
-        </p>
-      </div>
-
-      <dl className="grid w-full grid-cols-3 gap-3">
-        {stats.map((stat) => (
-          <div key={stat.label} className="card flex flex-col items-center gap-1 px-2 py-4">
-            <span className="text-2xl" aria-hidden="true">
-              {stat.emoji}
-            </span>
-            <dd className="text-2xl font-black leading-none">{stat.value}</dd>
-            <dt className="text-xs font-bold text-muted">{stat.label}</dt>
-          </div>
-        ))}
-      </dl>
-
-      <div className="min-h-6 text-sm font-bold" role="status">
-        {saveState === "saving" && <p className="text-muted">Saving your score…</p>}
-        {saveState === "saved" && <p className="text-ok-dark">Score saved ✓</p>}
-        {saveState === "error" && (
-          <p className="text-bad-dark">
-            {saveError}{" "}
-            <button type="button" onClick={onRetrySave} className="underline underline-offset-4">
-              Try again
-            </button>
-          </p>
-        )}
-      </div>
-
-      <div className="flex w-full max-w-sm flex-col gap-3">
-        <button type="button" onClick={onPlayAgain} className="btn btn-primary">
-          Play again
-        </button>
-        <Link href="/learn" className="btn btn-ghost">
-          Back to my path
-        </Link>
-      </div>
-    </main>
   );
 }

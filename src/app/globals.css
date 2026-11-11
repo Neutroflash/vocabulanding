@@ -252,3 +252,69 @@ body {
     animation: none;
   }
 }
+
+/* Memory Game card: flips in 3D. The back uses the module colors --m and --m-dark. */
+.mcard {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  perspective: 600px;
+  cursor: pointer;
+  border-radius: 1rem;
+}
+.mcard:disabled {
+  cursor: default;
+}
+.mcard:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 2px;
+}
+.mcard-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 320ms ease;
+}
+.mcard-up .mcard-inner {
+  transform: rotateY(180deg);
+}
+.mcard-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 1rem;
+  border: 2px solid var(--color-line);
+  border-bottom-width: 5px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-align: center;
+  overflow: hidden;
+}
+.mcard-back {
+  background: var(--m, var(--color-brand));
+  border-color: var(--m-dark, var(--color-brand-dark));
+  color: rgb(255 255 255 / 0.85);
+  font-size: 2rem;
+  font-weight: 900;
+}
+.mcard-front {
+  background: var(--color-surface);
+  transform: rotateY(180deg);
+}
+.mcard-matched .mcard-front {
+  border-color: var(--color-ok);
+  background: #dcf7e8;
+  color: var(--color-ok-dark);
+}
+.mcard-miss .mcard-front {
+  border-color: var(--color-bad);
+  background: #ffe3e4;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mcard-inner {
+    transition: none;
+  }
+}
