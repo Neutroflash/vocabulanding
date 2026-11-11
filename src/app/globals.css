@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-nunito), ui-rounded, system-ui, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg: #f6f5ff;
+  --color-surface: #ffffff;
+  --color-line: #e3e1f5;
+  --color-ink: #2b2a4c;
+  --color-muted: #6f6e8a;
+
+  --color-brand: #5b4bdb;
+  --color-brand-dark: #4335b0;
+  --color-brand-soft: #ecebff;
+  --color-sun: #ffc83d;
+  --color-sun-dark: #dd9f00;
+  --color-ok: #2fbf71;
+  --color-ok-dark: #1f9556;
+  --color-bad: #ff5a5f;
+  --color-bad-dark: #d93a40;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+/* Botón "gordito": borde inferior grueso que se hunde al presionar. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0 1.5rem;
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  border-bottom-width: 5px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform 80ms ease,
+    border-bottom-width 80ms ease,
+    filter 120ms ease;
+}
+.btn:hover {
+  filter: brightness(1.05);
+}
+.btn:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+}
+.btn:focus-visible,
+.input:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 2px;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--color-brand);
+  border-color: var(--color-brand-dark);
+  color: #fff;
+}
+.btn-sun {
+  background: var(--color-sun);
+  border-color: var(--color-sun-dark);
+  color: var(--color-ink);
+}
+.btn-ghost {
+  background: var(--color-surface);
+  border-color: var(--color-line);
+  color: var(--color-brand);
+}
+.btn-sm {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  font-size: 0.8rem;
+  border-bottom-width: 4px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-line);
+  border-radius: 1.25rem;
+}
+
+.input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border-radius: 1rem;
+  border: 2px solid var(--color-line);
+  background: var(--color-bg);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.input::placeholder {
+  color: var(--color-muted);
+  font-weight: 500;
 }
