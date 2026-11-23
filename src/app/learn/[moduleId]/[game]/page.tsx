@@ -4,7 +4,8 @@ import type { CSSProperties } from "react";
 import { ChoiceGame } from "@/components/choice-game";
 import { HangmanGame } from "@/components/hangman-game";
 import { MemoryGame } from "@/components/memory-game";
-import { getGame, getModule } from "@/content";
+import { ReadingGame } from "@/components/reading-game";
+import { getGame, getModule, hasGame } from "@/content";
 import { buildRound } from "@/lib/choice";
 import { requireStudent } from "@/lib/dal";
 import { buildHangmanRound } from "@/lib/hangman";
@@ -25,7 +26,7 @@ export default async function GamePage({ params }: Props) {
   const { moduleId, game: gameId } = await params;
   const learningModule = getModule(moduleId);
   const game = getGame(gameId);
-  if (!learningModule || !game) notFound();
+  if (!learningModule || !game || !hasGame(learningModule, game.id)) notFound();
 
   const shared = { moduleId: learningModule.id, moduleTitle: learningModule.title };
   const moduleColors = { "--m": learningModule.color, "--m-dark": learningModule.colorDark } as CSSProperties;
@@ -47,6 +48,13 @@ export default async function GamePage({ params }: Props) {
           {...shared}
           vocab={learningModule.vocab}
           initialRound={buildHangmanRound(learningModule.vocab)}
+        />
+      )}
+      {game.id === "reading" && learningModule.reading && (
+        <ReadingGame
+          {...shared}
+          reading={learningModule.reading}
+          initialRound={buildRound(learningModule.reading.questions, { keepOrder: true })}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import "server-only";
 import { count, eq, max, sql } from "drizzle-orm";
-import { GAMES, MODULES } from "@/content";
+import { GAMES_AVAILABLE, MODULES, gamesFor } from "@/content";
 import { db } from "@/db";
 import { attempts, type Game } from "@/db/schema";
 
@@ -42,9 +42,9 @@ export async function getProgress(userId: number): Promise<Progress> {
 
   // Only count pairs that still exist in the content.
   const completed = MODULES.reduce(
-    (n, m) => n + GAMES.filter((g) => byGame.has(progressKey(m.id, g.id))).length,
+    (n, m) => n + gamesFor(m).filter((g) => byGame.has(progressKey(m.id, g.id))).length,
     0,
   );
 
-  return { points, completed, available: MODULES.length * GAMES.length, byGame };
+  return { points, completed, available: GAMES_AVAILABLE, byGame };
 }

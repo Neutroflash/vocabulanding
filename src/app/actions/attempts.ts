@@ -28,6 +28,15 @@ function cleanDuration(value: unknown) {
 
 /** Saves a finished "Fill in the blank" round. The score is recomputed here from the answers. */
 export async function saveChoiceAttempt(input: ChoiceInput): Promise<SaveResult> {
+  return saveQuestionRound("choice", input);
+}
+
+/** Saves a finished Reading round: same rules as "Fill in the blank", but every question is asked. */
+export async function saveReadingAttempt(input: ChoiceInput): Promise<SaveResult> {
+  return saveQuestionRound("reading", input);
+}
+
+async function saveQuestionRound(game: "choice" | "reading", input: ChoiceInput): Promise<SaveResult> {
   const user = await getCurrentUser();
   if (!user || user.role !== "student") {
     return EXPIRED;
@@ -36,13 +45,15 @@ export async function saveChoiceAttempt(input: ChoiceInput): Promise<SaveResult>
   const learningModule = typeof input?.moduleId === "string" ? getModule(input.moduleId) : undefined;
   if (!learningModule || !Array.isArray(input.answers)) return INVALID;
 
-  const roundSize = roundSizeFor(learningModule.questions.length);
+  const questions = game === "reading" ? learningModule.reading?.questions : learningModule.questions;
+  if (!questions) return INVALID;
+  const roundSize = game === "reading" ? questions.length : roundSizeFor(questions.length);
   if (input.answers.length === 0 || input.answers.length > roundSize) return INVALID;
 
   const seen = new Set<number>();
   const results: boolean[] = [];
   for (const answer of input.answers) {
-    const question = Number.isInteger(answer?.q) ? learningModule.questions[answer.q] : undefined;
+    const question = Number.isInteger(answer?.q) ? questions[answer.q] : undefined;
     if (!question || seen.has(answer.q)) return INVALID;
     if (!Number.isInteger(answer.o) || answer.o < 0 || answer.o >= question.options.length) return INVALID;
     // No answers are allowed after the round has already ended.
@@ -57,7 +68,7 @@ export async function saveChoiceAttempt(input: ChoiceInput): Promise<SaveResult>
   await db.insert(attempts).values({
     userId: user.id,
     moduleId: learningModule.id,
-    game: "choice",
+    game,
     score: round.score,
     correct: round.correct,
     total: roundSize,

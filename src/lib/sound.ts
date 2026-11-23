@@ -84,9 +84,11 @@ function englishVoice(synth: SpeechSynthesis) {
  * Reads English text aloud with the browser's built-in voice. Does nothing if unsupported.
  * Automatic readings respect the mute switch; pass `force` when the student pressed "Listen".
  */
-export function speak(text: string, options: { force?: boolean } = {}) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  if (isMuted() && !options.force) return;
+export function speak(text: string, options: { force?: boolean; onEnd?: () => void } = {}) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window) || (isMuted() && !options.force)) {
+    options.onEnd?.();
+    return;
+  }
   const synth = window.speechSynthesis;
   synth.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
@@ -94,6 +96,8 @@ export function speak(text: string, options: { force?: boolean } = {}) {
   if (voice) utterance.voice = voice;
   utterance.lang = voice?.lang ?? "en-US";
   utterance.rate = 0.9;
+  // Also fires when the reading is cut short by another one or by stopSpeaking().
+  if (options.onEnd) utterance.onend = utterance.onerror = options.onEnd;
   synth.speak(utterance);
 }
 

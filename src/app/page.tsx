@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/logo";
+import { SchoolBanner } from "@/components/school-logo";
 import { getCurrentUser, homeFor } from "@/lib/dal";
 
 const GAMES = [
@@ -15,6 +16,8 @@ export default async function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-10 px-4 py-12 text-center">
+      <SchoolBanner />
+
       <div className="flex flex-col items-center gap-4">
         <Logo size="lg" />
         <p className="max-w-md text-lg font-semibold text-muted">

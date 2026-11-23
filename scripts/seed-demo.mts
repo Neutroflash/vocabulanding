@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 import { like } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { GAMES, MODULES } from "../src/content/index";
+import { MODULES, gamesFor } from "../src/content/index";
 import { attempts, users, type Game } from "../src/db/schema";
 import { ROUND_SIZE, pointsFor } from "../src/lib/choice";
 import { HANGMAN_HEARTS, HANGMAN_WORDS } from "../src/lib/hangman";
@@ -23,6 +23,7 @@ const RULES: Record<Game, { total: number; hearts: number }> = {
   choice: { total: ROUND_SIZE, hearts: 3 },
   memory: { total: MEMORY_PAIRS, hearts: MEMORY_HEARTS },
   hangman: { total: HANGMAN_WORDS, hearts: HANGMAN_HEARTS },
+  reading: { total: Math.max(...MODULES.map((m) => m.reading?.questions.length ?? 0)), hearts: 3 },
 };
 
 if (!process.env.DATABASE_URL) {
@@ -86,8 +87,8 @@ for (const [i, displayName] of NAMES.entries()) {
 
   const skill = 0.55 + Math.random() * 0.4;
   // Each student got part of the way along the path, in order.
-  const reached = 2 + Math.floor(Math.random() * (MODULES.length * GAMES.length - 1));
-  const path = MODULES.flatMap((m) => GAMES.map((g) => ({ moduleId: m.id, game: g.id })));
+  const path = MODULES.flatMap((m) => gamesFor(m).map((g) => ({ moduleId: m.id, game: g.id })));
+  const reached = 2 + Math.floor(Math.random() * (path.length - 1));
 
   const rows = path.slice(0, reached).flatMap(({ moduleId, game }, step) => {
     const plays = 1 + Math.floor(Math.random() * 3);

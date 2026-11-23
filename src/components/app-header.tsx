@@ -1,5 +1,6 @@
 import { logout } from "@/app/actions/auth";
 import { Logo } from "./logo";
+import { SchoolMark } from "./school-logo";
 
 export function AppHeader({ name, badge, wide }: { name: string; badge?: string; wide?: boolean }) {
   return (
@@ -20,6 +21,7 @@ export function AppHeader({ name, badge, wide }: { name: string; badge?: string;
               Log out
             </button>
           </form>
+          <SchoolMark />
         </div>
       </div>
     </header>

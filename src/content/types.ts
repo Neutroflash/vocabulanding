@@ -17,6 +17,16 @@ export type ChoiceQuestion = {
   hint?: string;
 };
 
+export type Reading = {
+  title: string;
+  /** Topic and school year shown above the title. */
+  topic: string;
+  level: string;
+  paragraphs: string[];
+  /** Comprehension questions, asked in this order. `prompt` is a full question, with no blanks. */
+  questions: ChoiceQuestion[];
+};
+
 export type LearningModule = {
   id: string;
   title: string;
@@ -27,6 +37,8 @@ export type LearningModule = {
   colorDark: string;
   vocab: VocabItem[];
   questions: ChoiceQuestion[];
+  /** Optional reading with comprehension questions. Modules without one have no Reading game. */
+  reading?: Reading;
 };
 
 export type GameInfo = {

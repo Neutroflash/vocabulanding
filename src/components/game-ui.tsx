@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { isMuted, setMuted, subscribeMuted } from "@/lib/sound";
+import { SchoolMark } from "./school-logo";
 
 export type SaveState = "idle" | "saving" | "saved" | "error";
 
@@ -59,6 +60,7 @@ export function GameTopBar({
           <span className="opacity-25 grayscale">{"❤️".repeat(maxHearts - left)}</span>
         </span>
       </p>
+      <SchoolMark />
     </header>
   );
 }

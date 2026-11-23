@@ -1,7 +1,7 @@
 import { index, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export type Role = "student" | "teacher";
-export type Game = "choice" | "memory" | "hangman";
+export type Game = "choice" | "memory" | "hangman" | "reading";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),

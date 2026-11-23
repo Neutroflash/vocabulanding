@@ -35,8 +35,8 @@ export const animalsSports: LearningModule = {
     { prompt: "A dolphin ___ very fast.", options: ["swim", "swims", "swimming"], answer: 1 },
     { prompt: "She ___ tennis at school.", options: ["play", "playing", "plays"], answer: 2 },
     { prompt: "Dogs ___ loudly at strangers.", options: ["bark", "barks", "barking"], answer: 0 },
-    // The source options use the verb "study" here; kept as written.
-    { prompt: "He ___ football on Sundays.", options: ["studies", "study", "studying"], answer: 0 },
+    // The source options use the verb "study" here ("studies football"); changed to "play". Pending teacher review.
+    { prompt: "He ___ football on Sundays.", options: ["plays", "play", "playing"], answer: 0 },
     { prompt: "My cat ___ on the sofa.", options: ["sleep", "sleeping", "sleeps"], answer: 2 },
 
     // Part 2: adjective + noun.

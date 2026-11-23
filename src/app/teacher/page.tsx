@@ -69,7 +69,15 @@ export default async function TeacherPage() {
                       <span className="font-extrabold">{learningModule.title}</span>
                     </th>
                     {GAMES.map((game) => {
-                      const cell = overview.cells.get(progressKey(learningModule.id, game.id))!;
+                      const cell = overview.cells.get(progressKey(learningModule.id, game.id));
+                      // Modules without a reading have no cell for it.
+                      if (!cell) {
+                        return (
+                          <td key={game.id} className="px-4 py-3 align-top text-muted">
+                            —
+                          </td>
+                        );
+                      }
                       return (
                         <td key={game.id} className="px-4 py-3 align-top">
                           <p className="font-extrabold">

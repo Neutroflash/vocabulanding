@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AppHeader } from "@/components/app-header";
 import { AutoRefresh } from "@/components/auto-refresh";
 import { StatTile, formatDateTime, formatDuration, formatPercent } from "@/components/teacher-ui";
-import { GAMES, MODULES, getGame, getModule } from "@/content";
+import { GAMES, MODULES, getGame, getModule, hasGame } from "@/content";
 import { requireTeacher } from "@/lib/dal";
 import { progressKey } from "@/lib/progress";
 import { GAMES_AVAILABLE, getStudentDetail } from "@/lib/teacher";
@@ -83,7 +83,9 @@ export default async function StudentPage({ params }: Props) {
                               </p>
                             </>
                           ) : (
-                            <p className="text-muted">Not played yet</p>
+                            <p className="text-muted">
+                              {hasGame(learningModule, game.id) ? "Not played yet" : "—"}
+                            </p>
                           )}
                         </td>
                       );

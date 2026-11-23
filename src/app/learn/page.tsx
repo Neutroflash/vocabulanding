@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { AppHeader } from "@/components/app-header";
-import { GAMES, MODULES } from "@/content";
+import { MODULES, gamesFor } from "@/content";
 import { requireStudent } from "@/lib/dal";
 import { getProgress, progressKey } from "@/lib/progress";
 
@@ -68,7 +68,7 @@ export default async function LearnPage() {
             </div>
 
             <ol className="flex flex-col items-center gap-6 py-8">
-              {GAMES.map((game, i) => {
+              {gamesFor(module).map((game, i) => {
                 const done = progress.byGame.get(progressKey(module.id, game.id));
                 return (
                   <li key={game.id} className={ZIGZAG[i % ZIGZAG.length]}>

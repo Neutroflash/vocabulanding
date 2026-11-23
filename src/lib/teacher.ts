@@ -1,6 +1,6 @@
 import "server-only";
 import { and, count, desc, eq, max, sql } from "drizzle-orm";
-import { GAMES, MODULES } from "@/content";
+import { GAMES_AVAILABLE, MODULES, gamesFor, getModule } from "@/content";
 import { db } from "@/db";
 import { attempts, users, type Game } from "@/db/schema";
 import { progressKey } from "./progress";
@@ -26,10 +26,11 @@ export type StudentSummary = {
 /** Totals for the whole class in one module + game. */
 export type ClassCell = { studentsDone: number; averageBest: number | null };
 
-export const GAMES_AVAILABLE = MODULES.length * GAMES.length;
+export { GAMES_AVAILABLE };
 
 function isKnownGame(moduleId: string, game: string) {
-  return MODULES.some((m) => m.id === moduleId) && GAMES.some((g) => g.id === game);
+  const learningModule = getModule(moduleId);
+  return learningModule !== undefined && gamesFor(learningModule).some((g) => g.id === game);
 }
 
 async function summarize(studentId?: number): Promise<StudentSummary[]> {
@@ -117,7 +118,7 @@ export async function getClassOverview(): Promise<ClassOverview> {
   let total = 0;
   const cells = new Map<string, ClassCell>();
   for (const learningModule of MODULES) {
-    for (const game of GAMES) {
+    for (const game of gamesFor(learningModule)) {
       const key = progressKey(learningModule.id, game.id);
       const played = students.map((s) => s.byGame.get(key)).filter((cell) => cell !== undefined);
       for (const cell of played) {

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser, homeFor } from "@/lib/dal";
 import { AuthForm } from "./auth-form";
 import { Logo } from "./logo";
+import { SchoolBanner } from "./school-logo";
 
 export async function AuthPage({ mode }: { mode: "login" | "signup" }) {
   const user = await getCurrentUser();
@@ -10,6 +11,7 @@ export async function AuthPage({ mode }: { mode: "login" | "signup" }) {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-8 px-4 py-10">
+      <SchoolBanner />
       <Link href="/">
         <Logo />
       </Link>

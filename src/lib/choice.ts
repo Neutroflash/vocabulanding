@@ -30,12 +30,13 @@ export function roundSizeFor(questionCount: number) {
   return Math.min(ROUND_SIZE, questionCount);
 }
 
-/** Picks random questions for one round and shuffles their options. */
-export function buildRound(questions: ChoiceQuestion[]): ChoiceRound {
-  const picked = shuffle(questions.map((question, index) => ({ question, index }))).slice(
-    0,
-    roundSizeFor(questions.length),
-  );
+/**
+ * Picks random questions for one round and shuffles their options.
+ * With `keepOrder` every question is asked, in the order of the content file (used by the Reading game).
+ */
+export function buildRound(questions: ChoiceQuestion[], { keepOrder = false } = {}): ChoiceRound {
+  const indexed = questions.map((question, index) => ({ question, index }));
+  const picked = keepOrder ? indexed : shuffle(indexed).slice(0, roundSizeFor(questions.length));
   return {
     id: Math.random().toString(36).slice(2),
     questions: picked.map(({ question, index }) => ({
