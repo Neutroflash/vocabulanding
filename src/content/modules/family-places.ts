@@ -24,8 +24,10 @@ export const familyPlaces: LearningModule = {
   questions: [
     // Base set (answer key provided by the teachers).
     { prompt: "___ is my mother.", hint: "near", options: ["This", "That", "Those"], answer: 0 },
-    { prompt: "My father works ___ a hospital.", options: ["in", "on", "at"], answer: 2 },
-    { prompt: "The children are ___ the park.", options: ["at", "in", "by"], answer: 1 },
+    // The source options were in / on / at, but "works in a hospital" is also correct; "in" was replaced.
+    { prompt: "My father works ___ a hospital.", options: ["of", "on", "at"], answer: 2 },
+    // The source options were at / in / by, and all three are correct English; the other two were replaced.
+    { prompt: "The children are ___ the park.", options: ["on", "in", "of"], answer: 1 },
 
     // Added for the demo: the source only has three questions for this module. Pending teacher review.
     { prompt: "___ are my cousins.", hint: "far", options: ["These", "Those", "That"], answer: 1 },

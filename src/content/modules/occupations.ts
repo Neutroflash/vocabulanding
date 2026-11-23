@@ -75,7 +75,8 @@ export const occupations: LearningModule = {
     {
       prompt:
         "Ricardo Mendoza is ___ Peruvian comedian and ___ successful entrepreneur.",
-      options: ["an / an", "a / a", "a / Ø"],
+      // The source's third option was "a / Ø", which is also correct English; replaced.
+      options: ["an / an", "a / a", "an / a"],
       answer: 1,
     },
     {
